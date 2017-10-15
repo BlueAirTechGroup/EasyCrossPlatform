@@ -21,6 +21,9 @@
     <ClInclude Include="EasyCP_Common.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="EasyCrossPlatform.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="XSYDMultiTask.cpp">
