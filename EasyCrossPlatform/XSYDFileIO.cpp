@@ -44,7 +44,7 @@ std::string EasyCrossPlatform::File::FileIO::ReadPartFile(const char * Path, lon
 	}
 	MyTemp[ReadLength] = '\0';
 	myTempRst = MyTemp;
-	delete MyTemp;
+	delete[] MyTemp;
 	fclose(myfile);
 	return myTempRst;
 }
@@ -75,7 +75,7 @@ std::string EasyCrossPlatform::File::FileIO::ReadFile(const char * Path)
 	}
 	MyTemp[FileLength] = '\0';
 	myTempRst = MyTemp;
-	delete MyTemp;
+	delete[] MyTemp;
 	fclose(myfile);
 	return myTempRst;
 }
