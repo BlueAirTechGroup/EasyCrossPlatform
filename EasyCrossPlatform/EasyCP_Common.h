@@ -6,4 +6,5 @@
 	#include <stdexcept> //StdException通用异常类
 	#include <vector> //STD动态数组Vector
 	#include <deque> //STD队列[双向数组]Deque
+	#include <list> //STD列表
 #endif

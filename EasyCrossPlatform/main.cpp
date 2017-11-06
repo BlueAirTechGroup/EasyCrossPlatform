@@ -1,30 +1,51 @@
 #include "XSYDMultiTask.h"
 #include <iostream>
-
-EasyCrossPlatform::Thread::ThreadManager MyManager(2);
-
-void MT(unsigned int &UniqueID,void* parameter, bool* isRunning, std::mutex &myMutex) {
-	int Num = *((int*) parameter);
-	myMutex.lock(); //对输出区域上锁
-	std::cout << "subthread started(" << Num << ")[" << UniqueID << "]" << std::endl;
-	for (int i = 0;i < 3;i++) {
-		std::cout << "Hi, I am the subthread(" << Num << ")[" << UniqueID << "]" << std::endl;
+struct TestThreadPara {
+	unsigned int WorkID;
+};
+void TaskJob(std::thread::id &ThreadID, void * Parameters, bool * RunningSign, std::mutex *Mutex) {
+	TestThreadPara &MyPara = *((TestThreadPara*)Parameters);
+	while (*RunningSign) {
+		std::cout << "Hi, Here's Subthread" << MyPara.WorkID << std::endl;
 	}
-	myMutex.unlock();
+	std::cout << "Thread Exited" << std::endl;
 	return;
 }
-void CallBack(unsigned int &UniqueID, std::mutex &myMutex) {
-	myMutex.lock();
-	std::cout << "thread exit[" << UniqueID << "]" << std::endl;
-	myMutex.unlock();
-	MyManager.deleteThread(UniqueID);
+void TaskJob_MTask(std::thread::id &ThreadID, void * Parameters, bool * RunningSign, std::mutex *Mutex) {
+	TestThreadPara &MyPara = *((TestThreadPara*)Parameters);
+	Mutex->lock();
+	std::cout << "Hi, Here's Subthread" << MyPara.WorkID << std::endl;
+	std::cout << "Thread Exited" << std::endl;
+	Mutex->unlock();
+	return;
 }
-int main(int argc, char** args) {
-	int a[]{ 1,2 };
-	for (int i = 0;i < 2;i++) {
-		unsigned int UID = MyManager.addThread(MT, &a[i], CallBack);
-		//std::cout << "UID:" << UID << std::endl;
-	}
+
+
+
+//Sigle Thread Test 
+int main_old(int argc, char** args) {
+	EasyCrossPlatform::Thread::SingleWork myOwnWork(TaskJob);
+	TestThreadPara MyPara;
+	MyPara.WorkID = 0;
+	myOwnWork.StartJob(NULL, &MyPara);
+	std::cout << "Main Thread Here" << std::endl;
+	system("pause");
+	myOwnWork.StopJob();
+	std::cout << "Thread Had been stopped" << std::endl;
 	system("pause");
 	return 0;
+}
+
+//Worker Pool Test
+int main(int argc, char** args) {
+	EasyCrossPlatform::Thread::SingleWork myOwnWork(TaskJob_MTask);
+	EasyCrossPlatform::Thread::WorkPool myWorks(4);
+
+	TestThreadPara MyPara[10];
+	for (unsigned int i = 0; i < 10; i++) {
+		MyPara[i].WorkID = i;
+		myWorks.addWork(myOwnWork, &MyPara[i]);
+	}
+	system("pause");
+
 }

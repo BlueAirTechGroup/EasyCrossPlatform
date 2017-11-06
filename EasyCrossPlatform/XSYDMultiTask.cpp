@@ -1,124 +1,156 @@
 #include "XSYDMultiTask.h"
-#include <iostream>
-using namespace EasyCrossPlatform::Thread;
-int EasyCrossPlatform::Thread::DoMultiThread(pendingThreadInfo PendingInfo, bool *isRunningSign, void* myMutex) {
-	PendingInfo.TasktoExec(PendingInfo.Unique_ID,PendingInfo.Parameter,isRunningSign,*((std::mutex*) myMutex));
-	PendingInfo.CallBack(PendingInfo.Unique_ID,*((std::mutex*) myMutex));
+
+int EasyCrossPlatform::Thread::SingleWork::DoingJob(EasyCrossPlatform::Thread::WorkInfo MyInfo)
+{
+	MyInfo.MyWork(std::this_thread::get_id(), MyInfo.Parameters, MyInfo.RunningSign, MyInfo.mMutex);
+	*(MyInfo.RunningSign) = false;
 	return 0;
 }
-int EasyCrossPlatform::Thread::SuperviseThreads(void* Infos, void* pendingInfos, bool* isSupervising, unsigned int MaxWorkerNum, bool* isRunning, void* myMutex) {
-	std::mutex* customMutex = (std::mutex*) myMutex;
-	std::deque<executingThreadInfo>* executingInfo = (std::deque<executingThreadInfo>*) (Infos);
-	std::deque<pendingThreadInfo>* pendingInfo = (std::deque<pendingThreadInfo>*) (pendingInfos);
 
-	std::thread newThread;
-	executingThreadInfo newThreadExecInfo;
-	pendingThreadInfo newTheadPendingInfo;
-	while ((*isSupervising)) {
-		if (!(executingInfo->empty())) {
-			for (auto i = executingInfo->begin();i != executingInfo->end();++i) {
-				if (i->exited){
-					i->MyThread->~thread();
-					delete i->MyThread;
-					i = executingInfo->erase(i);
-					if (i == executingInfo->end()) {
+EasyCrossPlatform::Thread::SingleWork::SingleWork(EasyCrossPlatform::Thread::SpecificWorkPtr mWork)
+{
+	this->MyWork = mWork;
+	this->mThread = NULL;
+}
+
+bool EasyCrossPlatform::Thread::SingleWork::StartJob(std::mutex *MyMutex, void * Parameter)
+{
+	if (this->RunningSign) { return false; }
+	if (this->mThread != NULL) {
+		if (this->mThread->joinable()) {
+			this->mThread->join();
+		}
+		delete this->mThread;
+		this->mThread = NULL;
+	}
+	WorkInfo MyInfo;
+	MyInfo.mMutex = MyMutex;
+	MyInfo.MyWork = this->MyWork;
+	MyInfo.Parameters = Parameter;
+	MyInfo.RunningSign = &(this->RunningSign);
+	this->RunningSign = true;
+	this->mThread = new std::thread(EasyCrossPlatform::Thread::SingleWork::DoingJob, MyInfo);
+	return true;
+}
+
+void EasyCrossPlatform::Thread::SingleWork::StopJob()
+{
+	this->RunningSign = false;
+	return;
+}
+
+bool EasyCrossPlatform::Thread::SingleWork::getRunningStatus()
+{
+	return this->RunningSign;
+}
+
+EasyCrossPlatform::Thread::SingleWork::~SingleWork()
+{
+	this->RunningSign = false;
+	if (this->mThread != NULL) {
+		if (this->mThread->joinable()) {
+			this->mThread->join();
+		}
+		delete this->mThread;
+		this->mThread = NULL;
+	}
+}
+
+void EasyCrossPlatform::Thread::WorkPool::SuperviseThreads(std::thread::id & ThreadID, void * Parameters, bool * RunningSign, std::mutex * Mutex)
+{
+	//信息预处理
+	WorksInfo MyInfo = *((WorksInfo *)Parameters);
+	std::deque<WorkerInfo> &MyWork = *(MyInfo.CurrentWorksAddr);
+	std::deque<WorkerInfo> &PendingWork = *(MyInfo.PendingWorksAddr);
+	unsigned int MaxThreadNum = MyInfo.MaxThread;
+	std::mutex* LineMutex = MyInfo.LineMutex;
+	delete Parameters;
+	//信息预处理完毕
+
+	WorkerInfo TmpWorkerInfo;
+	while ((*RunningSign)) {
+		if (!MyWork.empty()) {
+			for (auto i = MyWork.begin(); i != MyWork.end(); i++) {
+				//如果运行完毕, 则自动删除, 空出线程池空间
+				if ((*i).wInfo->getRunningStatus() == false) {
+					delete (*i).wInfo;
+					i = MyWork.erase(i);
+					if (i == MyWork.end()) {
 						break;
 					}
 				}
 			}
 		}
-		if (executingInfo->size() < MaxWorkerNum && !(pendingInfo->empty())) {
-			newTheadPendingInfo = pendingInfo->front();
-			newThreadExecInfo.MyThread = new std::thread(DoMultiThread, newTheadPendingInfo, isRunning, customMutex);
-			newThreadExecInfo.MyThread->detach();
-			newThreadExecInfo.Unique_ID = newTheadPendingInfo.Unique_ID;
-			newThreadExecInfo.exited = false;
-			executingInfo->push_back(newThreadExecInfo);
-			pendingInfo->pop_front();
+		//如果正在执行的线程数少于规定的线程数
+		if (MyWork.size() < MaxThreadNum && PendingWork.size() > 0) {
+			LineMutex->lock();
+			TmpWorkerInfo = PendingWork.front();
+			PendingWork.pop_front();
+			LineMutex->unlock();
+			TmpWorkerInfo.wInfo->StartJob(MyInfo.SharedMutex, TmpWorkerInfo.wParameters);
+			MyWork.push_back(TmpWorkerInfo);
 		}
 	}
-	return 0;
-}
-EasyCrossPlatform::Thread::ThreadManager::ThreadManager(unsigned int WorkerNum)
-{
-	this->isRunning = true;
-	this->isSupervising = true;
-	this->MaxUID = 0;
-	if (WorkerNum > 1) {
-		this->MaxWorkNum = WorkerNum;
-	}
-	else{
-		this->MaxWorkNum = 1;
-	}
-	this->supervisorThead = new std::thread(SuperviseThreads, (void*)&this->_runningThreads, &this->_waitThreads, &this->isSupervising, this->MaxWorkNum, &this->isRunning, (void*) &this->MMutex);
-	//this->supervisorThead->detach();
-}
-
-unsigned int EasyCrossPlatform::Thread::ThreadManager::addThread(ThreadTask MyTask, void * ThreadParameter, ThreadCallBack CallBack)
-{
-	if (this->isRunning) {
-		unsigned int newThreadUID;
-		if (MyTask != NULL && CallBack != NULL) {
-			newThreadUID = ++(this->MaxUID);
-			pendingThreadInfo newThreadInfo;
-			newThreadInfo.TasktoExec = MyTask;
-			newThreadInfo.Parameter = ThreadParameter;
-			newThreadInfo.CallBack = CallBack;
-			newThreadInfo.Unique_ID = newThreadUID;
-			this->_waitThreads.push_back(newThreadInfo);
-		}
-		else {
-			newThreadUID = 0;
-			throw std::invalid_argument("Your Callback Function and the Main Text cannot be point to NULL");
-		}
-		return newThreadUID;
-	}
-	else {
-		throw std::runtime_error("This Thread Pool is no longer available after cleanAllThread()");
-	}
-}
-
-bool EasyCrossPlatform::Thread::ThreadManager::deleteThread(unsigned int UniqueID, bool ThreadFinishCall)
-{
-	if (this->isRunning) {
-		if (!ThreadFinishCall) { //ThreadFinishCall只会发生在RunningThreads中
-			for (auto i = this->_waitThreads.begin(); i != this->_waitThreads.end();i++) {
-				if ((*i).Unique_ID == UniqueID) {
-					i = this->_waitThreads.erase(i);
-					return true;
-				}
+	//不Running了,销毁其余
+	if (!MyWork.empty()) {
+		for (auto i = MyWork.begin(); i != MyWork.end(); i++) {
+			(*i).wInfo->StopJob();
+			delete (*i).wInfo;
+			i = MyWork.erase(i);
+			if (i == MyWork.end()) {
+				break;
 			}
 		}
-		for (auto i = this->_runningThreads.begin();i != this->_runningThreads.end();i++) {
-			if ((*i).Unique_ID == UniqueID) {
-				(*i).exited = true;
-				return true;
+	}
+	if (!PendingWork.empty()) {
+		for (auto i = PendingWork.begin(); i != PendingWork.end(); i++) {
+			delete (*i).wInfo;
+			i = MyWork.erase(i);
+			if (i == MyWork.end()) {
+				break;
 			}
 		}
-	}else{
-		throw std::runtime_error("This Thread Pool is no longer available after cleanAllThread()");
 	}
-	return false;
+	return;
 }
 
-void EasyCrossPlatform::Thread::ThreadManager::cleanAllThread()
+EasyCrossPlatform::Thread::WorkPool::WorkPool(const unsigned int ThreadNum)
 {
-	this->isRunning = false;
-	this->isSupervising = false;
-	this->supervisorThead->join();
-	this->_waitThreads.clear();
-	/* for (executingThreadInfo i : this->_runningThreads) {
-		i.MyThread->~thread(); //销毁
-		delete i.MyThread; //释放内存
-	}*/
-	//this->cleanlock.lock(); //等待完毕
-	this->_runningThreads.clear();
-	this->MaxUID = 0;
+	this->MaxThread = ThreadNum;
+	this->SupervisingThread = new EasyCrossPlatform::Thread::SingleWork(this->SuperviseThreads);
+	WorksInfo* MyInfo = new WorksInfo;
+	MyInfo->CurrentWorksAddr = &(this->CurrentWorks);
+	MyInfo->PendingWorksAddr = &(this->PendingWorks);
+	MyInfo->MaxThread = this->MaxThread;
+	MyInfo->SharedMutex = &this->MyMutex;
+	MyInfo->LineMutex = &this->LineMutex;
+	this->SupervisingThread->StartJob(NULL,(void*) MyInfo);
 }
 
-
-EasyCrossPlatform::Thread::ThreadManager::~ThreadManager()
+EasyCrossPlatform::Thread::WorkPool::~WorkPool()
 {
-	this->cleanAllThread();
-	delete this->supervisorThead;
+	this->SupervisingThread->StopJob();
+	delete this->SupervisingThread;
+}
+
+void EasyCrossPlatform::Thread::WorkPool::addWork(SingleWork &MyWork, void* Parameter)
+{
+	SingleWork* TmpWork = new SingleWork(MyWork);
+	WorkerInfo MInfo;
+	MInfo.wInfo = TmpWork;
+	MInfo.wParameters = Parameter;
+	this->LineMutex.lock();
+	this->PendingWorks.push_back(MInfo);
+	this->LineMutex.unlock();
+}
+
+void EasyCrossPlatform::Thread::WorkPool::addWork_AtFront(SingleWork &MyWork, void* Parameter)
+{
+	SingleWork* TmpWork = new SingleWork(MyWork);
+	WorkerInfo MInfo;
+	MInfo.wInfo = TmpWork;
+	MInfo.wParameters = Parameter;
+	this->LineMutex.lock();
+	this->PendingWorks.push_front(MInfo);
+	this->LineMutex.unlock();
 }
