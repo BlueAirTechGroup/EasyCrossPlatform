@@ -1,9 +1,9 @@
-#ifndef XSYDCommonHeadersFile
-	#define XSYDCommonHeadersFile
+#ifndef __XSYDCommonHeadersFile__
+	#define __XSYDCommonHeadersFile__
 	#define NULL 0
 	//Define系统类型
 	#define EASYCROSSPLATFORM_VERSION 0;
-	#if defined(linux) || defined(_UNIX) || defined(__LINUX__)
+	#if defined(linux) || defined(_UNIX) || defined(__LINUX__) || defined(__unix__)
 		#define EASYCROSSPLATFORM_PLATFORM_LINUX true
 	#elif defined(__WINDOWS_) || defined(_WIN32)
 		#define EASYCROSSPLATFORM_PLATFORM_WINDOWS true

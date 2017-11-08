@@ -20,6 +20,14 @@ void TaskJob_MTask(std::thread::id &ThreadID, void * Parameters, bool * RunningS
 	Mutex->unlock();
 	return;
 }
+class MyMultiTaskWork : public EasyCrossPlatform::Thread::SingleWorkCls {
+public:
+	void ThreadJob(std::thread::id &ThreadID) {
+		while (this->getRunningStatus()) {
+			std::cout << "Hi!" << std::endl;
+		}
+	}
+};
 
 
 
@@ -51,11 +59,22 @@ int main_old2(int argc, char** args) {
 	return 0;
 }
 //FileReadTest
-int main(int argc, char** args) {
+int main_filetest(int argc, char** args) {
 	//std::string MyFileRst = EasyCrossPlatform::File::FileIO::ReadPartFile("E:\\233.txt", 0, 3);
 	//std::string MyFileRst = EasyCrossPlatform::File::FileIO::ReadPartFile("E:\\233.txt", -3, 3);
 	std::string MyFileRst = EasyCrossPlatform::File::FileIO::ReadFile("E:\\233.txt");
 	std::cout << "¶ÁÈ¡½á¹û:" << MyFileRst << std::endl;
+	system("pause");
+	return 0;
+}
+//multitasktest_extendclass{
+int main(int argc, char** args) {
+	MyMultiTaskWork MT;
+	std::cout << "MultiTaskStarts" << std::endl;
+	std::string XSYD;
+	MT.StartJob();
+	system("pause");
+	MT.StopJob();
 	system("pause");
 	return 0;
 }

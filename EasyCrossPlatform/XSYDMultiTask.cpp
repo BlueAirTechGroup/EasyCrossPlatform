@@ -11,6 +11,7 @@ EasyCrossPlatform::Thread::SingleWork::SingleWork(EasyCrossPlatform::Thread::Spe
 {
 	this->MyWork = mWork;
 	this->mThread = NULL;
+	this->RunningSign = false;
 }
 
 bool EasyCrossPlatform::Thread::SingleWork::StartJob(std::mutex *MyMutex, void * Parameter)
@@ -153,4 +154,66 @@ void EasyCrossPlatform::Thread::WorkPool::addWork_AtFront(SingleWork &MyWork, vo
 	this->LineMutex.lock();
 	this->PendingWorks.push_front(MInfo);
 	this->LineMutex.unlock();
+}
+
+int EasyCrossPlatform::Thread::SingleWorkCls::DoingJob(SingleWorkCls * ClassPtr)
+{
+	ClassPtr->ThreadJob(std::this_thread::get_id());
+	ClassPtr->RunningSign = false;
+	return 0;
+}
+
+EasyCrossPlatform::Thread::SingleWorkCls::SingleWorkCls()
+{
+	this->RunningSign = false;
+}
+
+bool EasyCrossPlatform::Thread::SingleWorkCls::StartJob()
+{
+	if (this->RunningSign) {
+		return false;
+	}
+	this->RunningSign = true;
+	this->mThread = new std::thread(EasyCrossPlatform::Thread::SingleWorkCls::DoingJob, this);
+	return true;
+}
+
+void EasyCrossPlatform::Thread::SingleWorkCls::StopJob()
+{
+	
+	if (this->mThread != NULL) {
+		if (this->RunningSign) {
+			this->RunningSign = false;
+			if (this->mThread->joinable()) {
+				this->mThread->join();
+			}
+		}
+	}
+	if (this->mThread != NULL) {
+		delete this->mThread;
+		this->mThread = NULL;
+	}
+	return;
+}
+
+bool EasyCrossPlatform::Thread::SingleWorkCls::getRunningStatus()
+{
+	return this->RunningSign;
+}
+
+void EasyCrossPlatform::Thread::SingleWorkCls::ThreadJob(std::thread::id & ThreadID)
+{
+	return;
+}
+
+EasyCrossPlatform::Thread::SingleWorkCls::~SingleWorkCls()
+{
+	this->RunningSign = false;
+	if (this->mThread != NULL) {
+		if (this->mThread->joinable()) {
+			this->mThread->join();
+		}
+		delete this->mThread;
+		this->mThread = NULL;
+	}
 }

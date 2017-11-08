@@ -18,11 +18,11 @@ FILE * EasyCrossPlatform::File::FileIO::OpenFile(const char * Path, const char *
 	return myfile;
 }
 #endif
-std::string EasyCrossPlatform::File::FileIO::ReadPartFile(const std::string & Path, long StartPos, const long ReadLength)
+std::string EasyCrossPlatform::File::FileIO::ReadPartFile(const std::string & Path, long StartPos, const unsigned long ReadLength)
 {
 	return EasyCrossPlatform::File::FileIO::ReadPartFile(Path.c_str(), StartPos, ReadLength);
 }
-std::string EasyCrossPlatform::File::FileIO::ReadPartFile(const char * Path, long StartPos, const long ReadLength)
+std::string EasyCrossPlatform::File::FileIO::ReadPartFile(const char * Path, long StartPos, const unsigned long ReadLength)
 {
 	std::string myTempRst;
 	FILE *myfile;

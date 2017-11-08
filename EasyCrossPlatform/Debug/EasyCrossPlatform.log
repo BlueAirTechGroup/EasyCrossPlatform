@@ -1,3 +1,16 @@
-﻿  XSYDFileIO.cpp
-e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\xsydfileio.cpp(42): warning C4018: “<”: 有符号/无符号不匹配
+﻿  XSYDUDPSocket.cpp
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.h(67): warning C4309: “默认参数”: 截断常量值
+  XSYDTCPSocket.cpp
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.h(67): warning C4309: “默认参数”: 截断常量值
+  XSYDMultiTask.cpp
+  XSYDFileIO.cpp
+  main.cpp
+  CrossPlatform_SocketException.cpp
+  CrossPlatform_Socket.cpp
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.h(67): warning C4309: “默认参数”: 截断常量值
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.cpp(39): warning C4305: “初始化”: 从“int”到“unsigned short”截断
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.cpp(39): warning C4309: “初始化”: 截断常量值
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.cpp(319): warning C4305: “参数”: 从“int”到“unsigned short”截断
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.cpp(319): warning C4309: “参数”: 截断常量值
+  正在生成代码...
   EasyCrossPlatform.vcxproj -> E:\C++\EasyCrossPlatform\EasyCrossPlatform\Debug\EasyCrossPlatform.exe

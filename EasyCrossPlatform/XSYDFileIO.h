@@ -1,5 +1,5 @@
-#ifndef XSYDFileIOFile
-	#define XSYDFileIOFile
+#ifndef __XSYDFileIOFile__
+	#define __XSYDFileIOFile__
 	#include "EasyCP_Common.h"
 	#include <stdio.h>
 	namespace EasyCrossPlatform {
@@ -8,8 +8,8 @@
 			private:
 				static FILE* OpenFile(const char* Path, const char * Mode);
 			public:
-				static std::string ReadPartFile(const std::string &Path, const long StartPos, const long ReadLength);
-				static std::string ReadPartFile(const char* Path, const long StartPos, const long ReadLength);
+				static std::string ReadPartFile(const std::string &Path, const long StartPos, const unsigned long ReadLength);
+				static std::string ReadPartFile(const char* Path, const long StartPos, const unsigned long ReadLength);
 				static std::string ReadFile(const std::string &Path);
 				static std::string ReadFile(const char* Path);
 				static bool WriteFile_ReplaceAt(long BytesMoved, const std::string &Path, const std::string &Content);

@@ -27,6 +27,18 @@
     <ClInclude Include="XSYDFileIO.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CrossPlatform_Socket.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CrossPlatform_SocketException.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="XSYDTCPSocket.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="XSYDUDPSocket.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="XSYDMultiTask.cpp">
@@ -36,6 +48,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="XSYDFileIO.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CrossPlatform_Socket.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CrossPlatform_SocketException.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="XSYDTCPSocket.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="XSYDUDPSocket.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

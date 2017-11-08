@@ -1,5 +1,5 @@
-#ifndef XSYDMultiTaskFile
-	#define XSYDMultiTaskFile
+#ifndef __XSYDMultiTaskFile__
+	#define __XSYDMultiTaskFile__
 	#include "EasyCP_Common.h"
 	#include <thread>
 	#include <mutex>
@@ -27,6 +27,21 @@
 					void StopJob();
 					bool getRunningStatus();
 					~SingleWork();
+			};
+			class SingleWorkCls {
+				private:
+					std::thread *mThread;
+					bool RunningSign;
+					static int DoingJob(SingleWorkCls* ClassPtr);
+				protected:
+
+				public:
+					SingleWorkCls();
+					bool StartJob();
+					void StopJob();
+					bool getRunningStatus();
+					virtual void ThreadJob(std::thread::id &ThreadID);
+					~SingleWorkCls();
 			};
 			struct WorkerInfo {
 				SingleWork* wInfo;
