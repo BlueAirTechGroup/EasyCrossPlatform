@@ -1,7 +1,7 @@
 #include "XSYDTCPSocket.h"
 
 EasyCrossPlatform::Network::TCPSocket::TCPSocket()
-	: Socket(Socket::TCP, Socket::GetSocketProtocol("TCP")),
+	: Socket(Socket::TCP,"TCP"),
 	m_Connected(false),
 	m_TCPMode(TCPSocket::NotSet)
 { }
@@ -21,7 +21,7 @@ EasyCrossPlatform::Network::TCPSocket::TCPSocket(Socket& SocketObject)
 { }
 
 EasyCrossPlatform::Network::TCPSocket::TCPSocket(unsigned short PortNumber)
-	: Socket(Socket::TCP, Socket::GetSocketProtocol("TCP")),
+	: Socket(Socket::TCP,"TCP"),
 	m_Connected(false),
 	m_TCPMode(TCPSocket::Server)
 {
@@ -30,7 +30,7 @@ EasyCrossPlatform::Network::TCPSocket::TCPSocket(unsigned short PortNumber)
 }
 
 EasyCrossPlatform::Network::TCPSocket::TCPSocket(const char* IPAddress, unsigned short PortNumber)
-	: Socket(Socket::TCP, Socket::GetSocketProtocol("TCP")),
+	: Socket(Socket::TCP, "TCP"),
 	m_Connected(true),
 	m_TCPMode(TCPSocket::Client)
 {
@@ -47,7 +47,7 @@ EasyCrossPlatform::Network::TCPSocket::TCPSocket(const char* IPAddress, unsigned
 }
 
 EasyCrossPlatform::Network::TCPSocket::TCPSocket(std::string& IPAddress, unsigned short PortNumber)
-	: Socket(Socket::TCP, Socket::GetSocketProtocol("TCP")),
+	: Socket(Socket::TCP, "TCP"),
 	m_Connected(true),
 	m_TCPMode(TCPSocket::Client)
 {
@@ -111,9 +111,14 @@ int EasyCrossPlatform::Network::TCPSocket::Send(const void* Buffer, int Size)
 	return -1;
 }
 
-int EasyCrossPlatform::Network::TCPSocket::Receive(const void* Buffer, int Size)
+int EasyCrossPlatform::Network::TCPSocket::Receive(const void* Buffer, int Size, bool BlockMode)
 {
-	return Socket::Read(Buffer, Size);
+	return Socket::Read(Buffer, Size, BlockMode);
+}
+
+const bool EasyCrossPlatform::Network::TCPSocket::isConnected()
+{
+	return this->m_Connected;
 }
 
 bool EasyCrossPlatform::Network::TCPSocket::Close()
@@ -121,3 +126,5 @@ bool EasyCrossPlatform::Network::TCPSocket::Close()
 	this->m_Connected = false;
 	return Socket::Close();
 }
+
+

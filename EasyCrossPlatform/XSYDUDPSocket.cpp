@@ -1,7 +1,7 @@
 #include "XSYDUDPSocket.h"
 
 EasyCrossPlatform::Network::UDPSocket::UDPSocket()
-	: Socket(Socket::GetSocketProtocol("UDP")),
+	: Socket(Socket::UDP,"UDP"),
 	m_Domain(Socket::IPv4),
 	m_Type(Socket::UDP),
 	m_Protocol(0),

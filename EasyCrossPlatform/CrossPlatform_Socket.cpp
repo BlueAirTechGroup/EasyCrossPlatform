@@ -6,11 +6,10 @@ void Socket::ProvideErrorString()
 	m_ErrorFlag = errno;
 	m_ErrorString = std::string(strerror(m_ErrorFlag));
 #else
-	char *buffer = new char[129];
+	char buffer[129];
 	m_ErrorFlag = WSAGetLastError();
 	_strerror_s(buffer, 128, "");
 	m_ErrorString = std::string(buffer, 128);
-	delete[] buffer;
 #endif
 
 }
@@ -73,6 +72,22 @@ Socket::Socket(SocketMode Mode, SocketProtocol Protocol, int Domain, unsigned sh
 		throw SocketException(m_ErrorString);
 	}
 }
+Socket::Socket(SocketMode Mode, const char* Protocol, int Domain, unsigned short MaxConnection)
+	: m_SocketDescriptor(0),
+	m_Domain(Domain),
+	m_Mode(Mode),
+	m_ConnectionQueueSize(MaxConnection),
+	m_IPAddress(0),
+	m_PortNumber(0),
+	m_ErrorFlag(0)
+{
+	if (this->SocketInit() == false) {
+		ProvideErrorString();
+		throw SocketException(m_ErrorString);
+	}
+	this->m_SocketProtocol = Socket::GetSocketProtocol(Protocol);
+}
+
 
 Socket::~Socket()
 {
@@ -316,16 +331,17 @@ Socket* Socket::Accept()
 		return NULL;
 	}
 
-	Socket* SocketObjectToReturn = new Socket(Socket::TCP, Socket::GetSocketProtocol("TCP"), Socket::IPv4, SOMAXCONN);
+	Socket* SocketObjectToReturn = new Socket(Socket::TCP, "TCP", Socket::IPv4, SOMAXCONN);
 
 	SocketObjectToReturn->m_SocketDescriptor = RemoteSocket;
 	SocketObjectToReturn->m_PortNumber = htons(Remote.sin_port);
 	memcpy(&SocketObjectToReturn->m_IPAddress, &Remote.sin_addr.s_addr, 4);
+	
 
 	return SocketObjectToReturn;
 }
 
-int Socket::Read(const void* Buffer, int Size)
+int Socket::Read(const void* Buffer, int Size, bool Block)
 {
 	if (this->m_SocketDescriptor == 0)
 	{
@@ -338,22 +354,39 @@ int Socket::Read(const void* Buffer, int Size)
 		throw SocketException("Socket is set to UDP, not TCP.");
 		return -1;
 	}
+	memset((void*)Buffer, 0, Size);
 #ifdef EASYCROSSPLATFORM_PLATFORM_LINUX
-	int ReturnValue = recv(this->m_SocketDescriptor, (void*)Buffer, Size, 0);
+	int Linux_Recv_flag = 0;
+	if (!Block) {
+		Linux_Recv_flag = MSG_DONTWAIT;
+	}
+	int ReturnValue = recv(this->m_SocketDescriptor, (void*)Buffer, Size, Linux_Recv_flag); //Linux MSG_DONTWAIT表示非阻塞
 #else
+	u_long mode = 1;
+	if (!Block) {
+		//设置为非阻塞模式
+		ioctlsocket(this->m_SocketDescriptor, FIONBIO, &mode);
+	}
 	int ReturnValue = recv(this->m_SocketDescriptor, (char*)Buffer, Size, 0);
+	if (!Block) {
+		mode = 0; //重新设置为阻塞模式
+		ioctlsocket(this->m_SocketDescriptor, FIONBIO, &mode);
+	}
+	
 #endif
 	if (ReturnValue == 0)
 	{
-		throw SocketException("Server shutting down.");
+		//throw SocketException("Server shutting down.");
+		return 0;
 	}
-
-	if (ReturnValue == -1)
+	int ErrCode = 0;
+	ErrCode = WSAGetLastError();
+	if (ReturnValue == -1 && ErrCode != 0 && ErrCode != EAGAIN && ErrCode != EWOULDBLOCK)
 	{
 		ProvideErrorString();
 		throw SocketException(m_ErrorString);
 	}
-
+	
 	return ReturnValue;
 }
 
@@ -384,7 +417,7 @@ int Socket::Write(const void* Buffer, int Size)
 	return ReturnValue;
 }
 
-int Socket::ReadFrom(void* Buffer, int Size)
+int Socket::ReadFrom(void* Buffer, int Size, bool Block)
 {
 	if (this->m_SocketDescriptor == 0)
 	{
@@ -401,14 +434,28 @@ int Socket::ReadFrom(void* Buffer, int Size)
 	memset(&DestinationAddress, 0, sizeof(struct sockaddr_in));
 
 #ifdef EASYCROSSPLATFORM_PLATFORM_LINUX
+	int Linux_Recv_flag = 0;
+	if (!Block) {
+		Linux_Recv_flag = MSG_DONTWAIT;
+	}
 	socklen_t AddressStructureSize = sizeof(struct sockaddr_in);
-	int ReturnValue = recvfrom(this->m_SocketDescriptor, Buffer, Size, 0, (struct sockaddr*)&DestinationAddress, &AddressStructureSize);
+	int ReturnValue = recvfrom(this->m_SocketDescriptor, Buffer, Size, Linux_Recv_flag, (struct sockaddr*)&DestinationAddress, &AddressStructureSize);
 #else
+	u_long mode = 1;
+	if (!Block) {
+		//设置为非阻塞模式
+		ioctlsocket(this->m_SocketDescriptor, FIONBIO, &mode);
+	}
 	int AddressStructureSize = sizeof(struct sockaddr_in);
 	int ReturnValue = recvfrom(this->m_SocketDescriptor, (char*)Buffer, Size, 0, (struct sockaddr*)&DestinationAddress, &AddressStructureSize);
+	if (!Block) {
+		mode = 0; //重新设置为阻塞模式
+		ioctlsocket(this->m_SocketDescriptor, FIONBIO, &mode);
+	}
 #endif
-
-	if (ReturnValue == -1)
+	int ErrCode = 0;
+	ErrCode = WSAGetLastError();
+	if (ReturnValue == -1 && ErrCode != 0 && ErrCode != EAGAIN && ErrCode != EWOULDBLOCK)
 	{
 		ProvideErrorString();
 		throw SocketException(m_ErrorString);
@@ -504,14 +551,40 @@ SocketProtocol Socket::GetSocketProtocol(const char* Protocol)
 {
 	struct protoent *TempProtoStruct;
 	int ProtocolNumber;
-
 	TempProtoStruct = getprotobyname(Protocol);
+
 	ProtocolNumber = TempProtoStruct->p_proto;
 #ifdef EASYCROSSPLATFORM_PLATFORM_LINUX
 	endprotoent();
 #else
 
 #endif
-
+	
 	return ProtocolNumber;
+}
+std::string Socket::GetRemoteAddr()
+{
+	std::string TmpRst;
+	if (this->m_Domain == IPv4) {
+		char *TmpName;
+		in_addr MyAddr;
+		MyAddr.S_un.S_addr = this->m_IPAddress;
+		TmpName = inet_ntoa(MyAddr);
+
+		TmpRst = TmpName;
+		//delete[] TmpName;
+		return TmpRst;
+
+	}
+	else if (this->m_Domain == IPv6) {
+		char *TmpName;
+		in_addr MyAddr;
+		MyAddr.S_un.S_addr = this->m_IPAddress;
+		TmpName = inet_ntoa(MyAddr);
+		TmpRst = TmpName;
+		return TmpRst;
+	}
+}
+unsigned short Socket::GetRemotePort() {
+	return this->m_PortNumber;
 }

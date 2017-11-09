@@ -10,6 +10,4 @@ public:
 	explicit SocketException(std::string& ErrorMessage);
 	explicit SocketException(const char* ErrorMessage);
 };
-
-
 #endif//__EasyCrossPlatform_CrossPlatform_SocketExceptionFile__

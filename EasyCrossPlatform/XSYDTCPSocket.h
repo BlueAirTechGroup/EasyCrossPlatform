@@ -42,8 +42,8 @@ namespace EasyCrossPlatform {
 			virtual TCPSocket*  Accept();
 
 			virtual int         Send(const void* Buffer, int Size);
-			virtual int         Receive(const void* Buffer, int Size);
-
+			virtual int         Receive(const void* Buffer, int Size, bool BlockMode = false);
+			virtual const bool isConnected();
 			virtual bool        Close();
 		};
 	}

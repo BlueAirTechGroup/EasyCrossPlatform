@@ -65,6 +65,7 @@
 		Socket();
 		Socket(Socket& SocketObj);
 		Socket(SocketMode Mode, SocketProtocol Protocol = 0, int Domain = IPv4, unsigned short MaxConnection = SOMAXCONN);
+		Socket(SocketMode Mode, const char* Protocol = "TCP", int Domain = IPv4, unsigned short MaxConnection = SOMAXCONN);
 		virtual ~Socket();
 
 		virtual int             SetProtocol(SocketProtocol Protocol);
@@ -89,10 +90,10 @@
 
 		virtual Socket*         Accept();
 
-		virtual int             Read(const void* Buffer, int Size);
+		virtual int             Read(const void* Buffer, int Size, bool Block = false);
 		virtual int             Write(const void* Buffer, int Size);
 
-		virtual int             ReadFrom(void* Buffer, int Size);
+		virtual int             ReadFrom(void* Buffer, int Size, bool Block = false);
 		virtual int             WriteTo(void* Buffer, int Size, const char* DestinationHost, unsigned short PortNumber);
 
 		virtual bool            Close();
@@ -104,7 +105,8 @@
 		virtual std::string&    GetErrorString();
 
 		static SocketProtocol GetSocketProtocol(const char* ProtocolName);
-
+		std::string GetRemoteAddr();
+		unsigned short GetRemotePort();
 	};
 
 #endif //__EasyCrossPlatform_CrossPlatform_SocketFile__
