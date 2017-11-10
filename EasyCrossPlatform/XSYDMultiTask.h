@@ -23,6 +23,7 @@
 				
 				public:
 					SingleWork(SpecificWorkPtr mWork);
+					SingleWork(SingleWork &mWork);
 					bool StartJob(std::mutex *MyMutex = NULL, void* Parameter = NULL);
 					void StopJob();
 					bool getRunningStatus();
@@ -31,20 +32,24 @@
 			class SingleWorkCls {
 				private:
 					std::thread *mThread;
+					std::mutex* TempMutex;
+					void* TempParameter;
 					bool RunningSign;
 					static int DoingJob(SingleWorkCls* ClassPtr);
 				protected:
 
 				public:
 					SingleWorkCls();
-					bool StartJob();
+					SingleWorkCls(SingleWorkCls &CopyWorkCls);
+					bool StartJob(std::mutex* MyMutex = NULL, void* Parameters = NULL);
 					void StopJob();
 					bool getRunningStatus();
-					virtual void ThreadJob(std::thread::id &ThreadID);
+					virtual void ThreadJob(std::thread::id &ThreadID, std::mutex* MyMutex = NULL, void* Parameters = NULL);
 					~SingleWorkCls();
 			};
 			struct WorkerInfo {
 				SingleWork* wInfo;
+				SingleWorkCls *wClsInfo;
 				void* wParameters;
 			};
 			struct WorksInfo {
@@ -63,11 +68,16 @@
 					std::mutex MyMutex;
 					std::mutex LineMutex;
 					SingleWork* SupervisingThread;
+					bool Started;
 				public:
 					WorkPool(const unsigned int ThreadNum = 4);
 					~WorkPool();
+					void Start();
+					void Stop();
 					void addWork(SingleWork &MyWork, void* Parameter = NULL);
+					void addWork(SingleWorkCls &MyWork, void* Parameter = NULL);
 					void addWork_AtFront(SingleWork &MyWork, void* Parameter = NULL);
+					void addWork_AtFront(SingleWorkCls &MyWork, void* Parameter = NULL);
 			};
 		}
 	}

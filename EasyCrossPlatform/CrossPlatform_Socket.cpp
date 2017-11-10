@@ -576,7 +576,7 @@ std::string Socket::GetRemoteAddr()
 		return TmpRst;
 
 	}
-	else if (this->m_Domain == IPv6) {
+	else{ // if (this->m_Domain == IPv6) {
 		char *TmpName;
 		in_addr MyAddr;
 		MyAddr.S_un.S_addr = this->m_IPAddress;
