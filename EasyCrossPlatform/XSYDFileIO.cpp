@@ -10,11 +10,11 @@ FILE * EasyCrossPlatform::File::FileIO::OpenFile(const char * Path, const char *
 	}
 	return myfile;
 }
-#elif defined(EASYCROSSPLATFORM_PLATFORM_LINUX)
+#else
 FILE * EasyCrossPlatform::File::FileIO::OpenFile(const char * Path, const char * Mode)
 {
 	FILE *myfile;
-	myfile = fopen(&myfile, Path, Mode);
+	myfile = fopen(Path, Mode);
 	return myfile;
 }
 #endif
@@ -140,7 +140,7 @@ bool EasyCrossPlatform::File::FileIO::WriteFile_Append(const char * Path, const 
 
 unsigned long EasyCrossPlatform::File::FileIO::GetFileLength(const std::string & Path)
 {
-	
+
 	return EasyCrossPlatform::File::FileIO::GetFileLength(Path.c_str());
 }
 

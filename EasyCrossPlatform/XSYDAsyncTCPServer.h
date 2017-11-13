@@ -4,7 +4,7 @@
 	#include "CrossPlatform_Socket.h"
 	#include "XSYDTCPSocket.h"
 	#include "XSYDMultiTask.h"
-	
+
 	namespace EasyCrossPlatform {
 		namespace Network {
 			#define TCPAsyncServerTmpSize 50
@@ -21,8 +21,8 @@
 				EasyCrossPlatform::Thread::SingleWork* m_ConnectionThread;
 				EasyCrossPlatform::Thread::SingleWork* m_MsgThread;
 				void StartUp(bool UseSameMutex = true);
-				static void SuperviseConnectionThread(std::thread::id &ThreadID, void* ClassObj, bool * RunningSign, std::mutex *Mutex);
-				static void SuperviseMsgThread(std::thread::id &ThreadID, void* ClassObj, bool * RunningSign, std::mutex *Mutex);
+				static void SuperviseConnectionThread(std::thread::id ThreadID, void* ClassObj, bool * RunningSign, std::mutex *Mutex);
+				static void SuperviseMsgThread(std::thread::id ThreadID, void* ClassObj, bool * RunningSign, std::mutex *Mutex);
 			protected:
 
 			public:

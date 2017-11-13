@@ -336,7 +336,7 @@ Socket* Socket::Accept()
 	SocketObjectToReturn->m_SocketDescriptor = RemoteSocket;
 	SocketObjectToReturn->m_PortNumber = htons(Remote.sin_port);
 	memcpy(&SocketObjectToReturn->m_IPAddress, &Remote.sin_addr.s_addr, 4);
-	
+
 
 	return SocketObjectToReturn;
 }
@@ -372,7 +372,7 @@ int Socket::Read(const void* Buffer, int Size, bool Block)
 		mode = 0; //重新设置为阻塞模式
 		ioctlsocket(this->m_SocketDescriptor, FIONBIO, &mode);
 	}
-	
+
 #endif
 	if (ReturnValue == 0)
 	{
@@ -380,13 +380,13 @@ int Socket::Read(const void* Buffer, int Size, bool Block)
 		return 0;
 	}
 	int ErrCode = 0;
-	ErrCode = WSAGetLastError();
+	ErrCode = this->GetError();
 	if (ReturnValue == -1 && ErrCode != 0 && ErrCode != EAGAIN && ErrCode != EWOULDBLOCK)
 	{
 		ProvideErrorString();
 		throw SocketException(m_ErrorString);
 	}
-	
+
 	return ReturnValue;
 }
 
@@ -454,7 +454,7 @@ int Socket::ReadFrom(void* Buffer, int Size, bool Block)
 	}
 #endif
 	int ErrCode = 0;
-	ErrCode = WSAGetLastError();
+	ErrCode = this->GetError();
 	if (ReturnValue == -1 && ErrCode != 0 && ErrCode != EAGAIN && ErrCode != EWOULDBLOCK)
 	{
 		ProvideErrorString();
@@ -488,7 +488,7 @@ int Socket::WriteTo(void* Buffer, int Size, const char* DestinationHost, unsigne
 	//if (inet_aton(DestinationHost, &DestinationAddress.sin_addr) == 0)
 	if(inet_pton(m_Domain, DestinationHost, &DestinationAddress.sin_addr) == 0)
 	{
-		
+
 		throw SocketException("Invalid address.");
 		return -1;
 	}
@@ -559,7 +559,7 @@ SocketProtocol Socket::GetSocketProtocol(const char* Protocol)
 #else
 
 #endif
-	
+
 	return ProtocolNumber;
 }
 std::string Socket::GetRemoteAddr()
@@ -568,7 +568,14 @@ std::string Socket::GetRemoteAddr()
 	if (this->m_Domain == IPv4) {
 		char *TmpName;
 		in_addr MyAddr;
-		MyAddr.S_un.S_addr = this->m_IPAddress;
+
+		#ifdef EASYCROSSPLATFORM_PLATFORM_LINUX
+            MyAddr.s_addr =
+		#else
+            MyAddr.S_un.S_addr =
+		#endif
+
+		this->m_IPAddress;
 		TmpName = inet_ntoa(MyAddr);
 
 		TmpRst = TmpName;
@@ -579,7 +586,12 @@ std::string Socket::GetRemoteAddr()
 	else{ // if (this->m_Domain == IPv6) {
 		char *TmpName;
 		in_addr MyAddr;
-		MyAddr.S_un.S_addr = this->m_IPAddress;
+		#ifdef EASYCROSSPLATFORM_PLATFORM_LINUX
+            MyAddr.s_addr =
+		#else
+            MyAddr.S_un.S_addr =
+		#endif
+		this->m_IPAddress;
 		TmpName = inet_ntoa(MyAddr);
 		TmpRst = TmpName;
 		return TmpRst;

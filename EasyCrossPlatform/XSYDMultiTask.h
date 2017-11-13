@@ -6,7 +6,7 @@
 	namespace EasyCrossPlatform {
 		namespace Thread {
 
-			typedef void (*SpecificWorkPtr)(std::thread::id &ThreadID, void* Parameters, bool * RunningSign, std::mutex *Mutex);
+			typedef void (*SpecificWorkPtr)(std::thread::id ThreadID, void* Parameters, bool * RunningSign, std::mutex *Mutex);
 			struct WorkInfo {
 				SpecificWorkPtr MyWork;
 				bool * RunningSign;
@@ -20,7 +20,7 @@
 					SpecificWorkPtr MyWork;
 					static int DoingJob(WorkInfo MyInfo);
 				protected:
-				
+
 				public:
 					SingleWork(SpecificWorkPtr mWork);
 					SingleWork(SingleWork &mWork);
@@ -44,7 +44,7 @@
 					bool StartJob(std::mutex* MyMutex = NULL, void* Parameters = NULL);
 					void StopJob();
 					bool getRunningStatus();
-					virtual void ThreadJob(std::thread::id &ThreadID, std::mutex* MyMutex = NULL, void* Parameters = NULL);
+					virtual void ThreadJob(std::thread::id ThreadID, std::mutex* MyMutex = NULL, void* Parameters = NULL);
 					~SingleWorkCls();
 			};
 			struct WorkerInfo {
@@ -61,7 +61,7 @@
 			};
 			class WorkPool {
 				private:
-					static void SuperviseThreads(std::thread::id &ThreadID, void* Parameters, bool * RunningSign, std::mutex *Mutex);
+					static void SuperviseThreads(std::thread::id ThreadID, void* Parameters, bool * RunningSign, std::mutex *Mutex);
 					unsigned int MaxThread = 4;
 					std::deque<WorkerInfo> CurrentWorks;
 					std::deque <WorkerInfo> PendingWorks;

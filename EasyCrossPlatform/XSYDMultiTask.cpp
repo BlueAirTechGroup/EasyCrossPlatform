@@ -71,7 +71,7 @@ EasyCrossPlatform::Thread::SingleWork::~SingleWork()
 	}
 }
 
-void EasyCrossPlatform::Thread::WorkPool::SuperviseThreads(std::thread::id & ThreadID, void * Parameters, bool * RunningSign, std::mutex * Mutex)
+void EasyCrossPlatform::Thread::WorkPool::SuperviseThreads(std::thread::id ThreadID, void * Parameters, bool * RunningSign, std::mutex * Mutex)
 {
 	//信息预处理
 	WorksInfo MyInfo = *((WorksInfo *)Parameters);
@@ -265,7 +265,7 @@ bool EasyCrossPlatform::Thread::SingleWorkCls::StartJob(std::mutex* MyMutex, voi
 
 void EasyCrossPlatform::Thread::SingleWorkCls::StopJob()
 {
-	
+
 	if (this->mThread != NULL) {
 		this->RunningSign = false;
 		if (this->mThread->joinable()) {
@@ -282,7 +282,7 @@ bool EasyCrossPlatform::Thread::SingleWorkCls::getRunningStatus()
 	return this->RunningSign;
 }
 
-void EasyCrossPlatform::Thread::SingleWorkCls::ThreadJob(std::thread::id & ThreadID, std::mutex* MyMutex, void* Parameters)
+void EasyCrossPlatform::Thread::SingleWorkCls::ThreadJob(std::thread::id ThreadID, std::mutex* MyMutex, void* Parameters)
 {
 	return;
 }

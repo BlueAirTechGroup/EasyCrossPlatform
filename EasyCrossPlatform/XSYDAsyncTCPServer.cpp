@@ -17,7 +17,7 @@ void EasyCrossPlatform::Network::TCPAsyncSocket::StartUp(bool UseSameMutex)
 	this->m_Socket.Create();
 }
 
-void EasyCrossPlatform::Network::TCPAsyncSocket::SuperviseConnectionThread(std::thread::id & ThreadID, void * ClassObj, bool * RunningSign, std::mutex * Mutex)
+void EasyCrossPlatform::Network::TCPAsyncSocket::SuperviseConnectionThread(std::thread::id ThreadID, void * ClassObj, bool * RunningSign, std::mutex * Mutex)
 {
 	TCPAsyncSocket &MyClass = *((TCPAsyncSocket*)ClassObj);
 	TCPSocket* NewAcceptedSocket;
@@ -32,7 +32,7 @@ void EasyCrossPlatform::Network::TCPAsyncSocket::SuperviseConnectionThread(std::
 	}
 }
 
-void EasyCrossPlatform::Network::TCPAsyncSocket::SuperviseMsgThread(std::thread::id & ThreadID, void * ClassObj, bool * RunningSign, std::mutex * Mutex)
+void EasyCrossPlatform::Network::TCPAsyncSocket::SuperviseMsgThread(std::thread::id ThreadID, void * ClassObj, bool * RunningSign, std::mutex * Mutex)
 {
 	TCPAsyncSocket &MyClass = *((TCPAsyncSocket*)ClassObj);
 	char ReadBuffer[TCPAsyncServerTmpSize + 1] = "";
@@ -163,7 +163,7 @@ EasyCrossPlatform::Network::TCPAsyncSocket::~TCPAsyncSocket()
 		this->m_MsgThread;
 	}
 
-	
+
 	if (this->m_ConnectionMutex != this->m_MsgMutex) {
 		delete this->m_MsgMutex;
 	}

@@ -13,6 +13,7 @@
 		#include <sys/un.h>
 		#include <netinet/in.h>
 		#include <netdb.h>
+		#include <unistd.h>
 		#include <arpa/inet.h>
 	#else
 		#include <winsock2.h>
@@ -39,7 +40,7 @@
 			IPv6 = AF_INET6
 		};
 	protected:
-	#ifdef __unix__
+	#ifdef EASYCROSSPLATFORM_PLATFORM_LINUX
 		int             m_SocketDescriptor;
 	#else
 		SOCKET          m_SocketDescriptor;

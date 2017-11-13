@@ -3,7 +3,7 @@
 struct TestThreadPara {
 	unsigned int WorkID;
 };
-void TaskJob(std::thread::id &ThreadID, void * Parameters, bool * RunningSign, std::mutex *Mutex) {
+void TaskJob(std::thread::id ThreadID, void * Parameters, bool * RunningSign, std::mutex *Mutex) {
 	TestThreadPara &MyPara = *((TestThreadPara*)Parameters);
 	while (*RunningSign) {
 		std::cout << "Hi, Here's Subthread" << MyPara.WorkID << std::endl;
@@ -11,7 +11,7 @@ void TaskJob(std::thread::id &ThreadID, void * Parameters, bool * RunningSign, s
 	std::cout << "Thread Exited" << std::endl;
 	return;
 }
-void TaskJob_MTask(std::thread::id &ThreadID, void * Parameters, bool * RunningSign, std::mutex *Mutex) {
+void TaskJob_MTask(std::thread::id ThreadID, void * Parameters, bool * RunningSign, std::mutex *Mutex) {
 	TestThreadPara &MyPara = *((TestThreadPara*)Parameters);
 	Mutex->lock();
 	std::cout << "Hi, Here's Subthread" << MyPara.WorkID << std::endl;
@@ -40,7 +40,7 @@ public:
 
 
 
-//Sigle Thread Test 
+//Sigle Thread Test
 int main_old(int argc, char** args) {
 	EasyCrossPlatform::Thread::SingleWork myOwnWork(TaskJob);
 	TestThreadPara MyPara;
@@ -122,7 +122,7 @@ int main_SocketTest(int argc, char** args) {
 		delete ClientSock;
 	}
 }
-int main(int argc, char** args) {
+int main_1(int argc, char** args) {
 	return 0;
 }
 
@@ -138,9 +138,12 @@ public:
 		std::cout << "Disconnected:" << MySocket.GetRemoteAddr() << "(" << MySocket.GetRemotePort() << ")" << std::endl;
 	}
 };
-int main_AsyncServer(int argc, char** args){
+int main(int argc, char** args){
 	MyServer mServer;
 	mServer.Listen(900);
-	system("pause");
+	char Input[100];
+	std::cout << "Press Any Key to Continue" << std::endl;
+    std::cin >> Input;
+    std::cout << "Bye!" << std::endl;
 	return 0;
 }

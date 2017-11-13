@@ -14,7 +14,7 @@ namespace EasyCrossPlatform {
 			struct sockaddr_in  m_ReadSocketAddress;
 			struct sockaddr_in  m_SendSocketAddress;
 			#ifdef EASYCROSSPLATFORM_PLATFORM_LINUX
-			socklen_t           m_StructureSize;
+			socklen_t           m_Structuresize;
 			#else
 			int                 m_Structuresize;
 			#endif
