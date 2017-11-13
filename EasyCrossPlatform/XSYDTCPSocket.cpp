@@ -113,7 +113,11 @@ int EasyCrossPlatform::Network::TCPSocket::Send(const void* Buffer, int Size)
 
 int EasyCrossPlatform::Network::TCPSocket::Receive(const void* Buffer, int Size, bool BlockMode)
 {
-	return Socket::Read(Buffer, Size, BlockMode);
+	int ReadRst = Socket::Read(Buffer, Size, BlockMode);
+	if (ReadRst == 0) {
+		this->m_Connected = false;
+	}
+	return ReadRst;
 }
 
 const bool EasyCrossPlatform::Network::TCPSocket::isConnected()

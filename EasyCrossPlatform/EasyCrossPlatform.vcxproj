@@ -117,6 +117,7 @@
     <ClInclude Include="CrossPlatform_SocketException.h" />
     <ClInclude Include="EasyCP_Common.h" />
     <ClInclude Include="EasyCrossPlatform.h" />
+    <ClInclude Include="XSYDAsyncTCPServer.h" />
     <ClInclude Include="XSYDFileIO.h" />
     <ClInclude Include="XSYDMultiTask.h" />
     <ClInclude Include="XSYDTCPSocket.h" />
@@ -126,6 +127,7 @@
     <ClCompile Include="CrossPlatform_Socket.cpp" />
     <ClCompile Include="CrossPlatform_SocketException.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="XSYDAsyncTCPServer.cpp" />
     <ClCompile Include="XSYDFileIO.cpp" />
     <ClCompile Include="XSYDMultiTask.cpp" />
     <ClCompile Include="XSYDTCPSocket.cpp" />

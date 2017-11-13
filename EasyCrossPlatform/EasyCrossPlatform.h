@@ -5,4 +5,5 @@
 	#include "XSYDFileIO.h"
 	#include "XSYDTCPSocket.h"
 	#include "XSYDUDPSocket.h"
+	#include "XSYDAsyncTCPServer.h"
 #endif //__EasyCrossPlatformFile__

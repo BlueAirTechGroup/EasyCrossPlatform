@@ -95,7 +95,7 @@ int main_MTEXT(int argc, char** args) {
 
 
 //Socket Test
-int main_TCPSocks(int argc, char** args) {
+int main_SocketTest(int argc, char** args) {
 	EasyCrossPlatform::Network::TCPSocket MySock;
 	MySock.Create();
 	MySock.Bind(700);
@@ -117,10 +117,30 @@ int main_TCPSocks(int argc, char** args) {
 			std::cout << "Client Connection Shutdown" << std::endl;
 		}
 		std::cout << myBuffer << std::endl;
+		std::cout << strlen(myBuffer) << std::endl;
 		ClientSock->Close();
 		delete ClientSock;
 	}
 }
 int main(int argc, char** args) {
+	return 0;
+}
+
+class MyServer : public EasyCrossPlatform::Network::TCPAsyncSocket {
+public:
+	void ConnectedCallBack(EasyCrossPlatform::Network::TCPSocket &MySocket, std::mutex &ConnectionMutex) {
+		std::cout << "Connected:" << MySocket.GetRemoteAddr() << "(" << MySocket.GetRemotePort() << ")" << std::endl;
+	}
+	void MsgCallBack(EasyCrossPlatform::Network::TCPSocket &MySocket, std::string Msg, std::mutex &MsgMutex) {
+		std::cout << "Msg:" << MySocket.GetRemoteAddr() << "(" << MySocket.GetRemotePort() << ")[" << Msg << "]" << std::endl;
+	}
+	void DisconnectCallBack(EasyCrossPlatform::Network::TCPSocket &MySocket, std::mutex &ConnectionMutex) {
+		std::cout << "Disconnected:" << MySocket.GetRemoteAddr() << "(" << MySocket.GetRemotePort() << ")" << std::endl;
+	}
+};
+int main_AsyncServer(int argc, char** args){
+	MyServer mServer;
+	mServer.Listen(900);
+	system("pause");
 	return 0;
 }
