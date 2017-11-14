@@ -5,5 +5,5 @@ Desktop.ini
 
 # Visual Studio:
 .vs/*
-
+ .vs/EasyCrossPlatform/v15/*
 *.ipch
