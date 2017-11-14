@@ -322,12 +322,13 @@ Socket* Socket::Accept()
 #endif
 
 	StructSize = sizeof(sockaddr_in);
-
 	RemoteSocket = accept(this->m_SocketDescriptor, (struct sockaddr*)&Remote, &StructSize);
 	if (RemoteSocket == -1)
 	{
-		ProvideErrorString();
-		throw SocketException(m_ErrorString);
+		if (this->GetError() != 0) {
+			ProvideErrorString();
+			throw SocketException(m_ErrorString);
+		}
 		return NULL;
 	}
 

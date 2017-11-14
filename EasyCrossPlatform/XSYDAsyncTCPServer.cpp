@@ -24,10 +24,12 @@ void EasyCrossPlatform::Network::TCPAsyncSocket::SuperviseConnectionThread(std::
 	while (*RunningSign) {
 		if (MyClass.isListening) {
 			NewAcceptedSocket = MyClass.m_Socket.Accept();
-			MyClass.m_ClientSocketListMutex.lock();
-			MyClass.m_ClientSockets.push_back(NewAcceptedSocket);
-			MyClass.ConnectedCallBack(*(NewAcceptedSocket), *(MyClass.m_ConnectionMutex));
-			MyClass.m_ClientSocketListMutex.unlock();
+			if (NewAcceptedSocket != NULL) {
+				MyClass.m_ClientSocketListMutex.lock();
+				MyClass.m_ClientSockets.push_back(NewAcceptedSocket);
+				MyClass.ConnectedCallBack(*(NewAcceptedSocket), *(MyClass.m_ConnectionMutex));
+				MyClass.m_ClientSocketListMutex.unlock();
+			}
 		}
 	}
 }

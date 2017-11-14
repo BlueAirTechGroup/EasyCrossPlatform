@@ -93,13 +93,18 @@ int EasyCrossPlatform::Network::TCPSocket::Disconnect()
 EasyCrossPlatform::Network::TCPSocket* EasyCrossPlatform::Network::TCPSocket::Accept()
 {
 	Socket *pointer = Socket::Accept();
-	EasyCrossPlatform::Network::TCPSocket* sock = new EasyCrossPlatform::Network::TCPSocket(*pointer);
-	sock->m_Connected = true;
-	sock->m_TCPMode = TCPSocket::Client;
-	sock->m_PortNumber = this->m_PortNumber;
+	if (pointer != NULL) {
+		EasyCrossPlatform::Network::TCPSocket* sock = new EasyCrossPlatform::Network::TCPSocket(*pointer);
+		sock->m_Connected = true;
+		sock->m_TCPMode = TCPSocket::Client;
+		sock->m_PortNumber = this->m_PortNumber;
 
-	delete pointer;
-	return sock;
+		delete pointer;
+		return sock;
+	}
+	else {
+		return NULL;
+	}
 }
 
 int EasyCrossPlatform::Network::TCPSocket::Send(const void* Buffer, int Size)

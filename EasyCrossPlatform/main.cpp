@@ -145,5 +145,6 @@ int main(int argc, char** args){
 	std::cout << "Press Any Key to Continue" << std::endl;
     std::cin >> Input;
     std::cout << "Bye!" << std::endl;
+	mServer.StopListen();
 	return 0;
 }
