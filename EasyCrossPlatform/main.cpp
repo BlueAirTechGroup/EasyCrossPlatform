@@ -138,7 +138,8 @@ public:
 		std::cout << "Disconnected:" << MySocket.GetRemoteAddr() << "(" << MySocket.GetRemotePort() << ")" << std::endl;
 	}
 };
-int main(int argc, char** args){
+//AsyncServer Test
+int main_AsyncServer(int argc, char** args){
 	MyServer mServer;
 	mServer.Listen(900);
 	char Input[100];
@@ -147,4 +148,17 @@ int main(int argc, char** args){
     std::cout << "Bye!" << std::endl;
 	mServer.StopListen();
 	return 0;
+}
+
+//ChronoTest
+int main(int argc, char** args) {
+	//double nowTime = EasyCrossPlatform::Chrono::systemTime();
+	double nowTime = EasyCrossPlatform::Chrono::accurateTime();
+	std::cout << "Time:" << nowTime << std::endl;
+	system("pause");
+	//double newTime = EasyCrossPlatform::Chrono::systemTime();
+	double newTime = EasyCrossPlatform::Chrono::accurateTime();
+	std::cout << "Duration: " << (newTime - nowTime) << " s" << std::endl;
+	std::cout << "Take: " << (2 * sizeof(double)) << "Byte Space" << std::endl;
+	system("pause");
 }

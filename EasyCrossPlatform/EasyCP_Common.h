@@ -15,11 +15,12 @@
     #else
         #define EASYCROSSPLATFORM_PLATFORM_LINUX
     #endif
+	#include <string> //标准字符串
+	#include <chrono> //时间
 	#include <cassert> //Debug类
 	#include <exception> //Exception异常类
 	#include <stdexcept> //StdException通用异常类
 	#include <vector> //STD动态数组Vector
 	#include <deque> //STD队列[双向数组]Deque
 	#include <list> //STD列表
-	#include <string>
 #endif

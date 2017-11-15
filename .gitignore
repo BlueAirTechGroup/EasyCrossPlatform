@@ -7,3 +7,8 @@ Desktop.ini
 .vs/*
  .vs/EasyCrossPlatform/v15/*
 *.ipch
+Debug/*
+x64/Debug/*
+Release/*
+x64/Release/*
+

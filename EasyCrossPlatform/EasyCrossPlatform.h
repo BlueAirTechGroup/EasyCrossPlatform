@@ -6,4 +6,5 @@
 	#include "XSYDTCPSocket.h"
 	#include "XSYDUDPSocket.h"
 	#include "XSYDAsyncTCPServer.h"
+	#include "XSYDChrono.h"
 #endif //__EasyCrossPlatformFile__
