@@ -9,3 +9,5 @@ Require Support: Unix / Windows System | C++ 11
 Everybody Loves C++, but there is actually no user-friendly libs for beginners to start using C++ with full support of network and multithreading function, while covering the hardware and underlying technologies. <br />
 Influenced by <a href="http://reasoning.biz" target="_blank">Reasoning</a> Library, however, that library is no longer maintained since 2008<br />
 With less code, developers can develop more safe code preventing memory leaks and debug less. EasyCrossPlatform also brings noticeable performance while enabling developers to develop codes fast and secure.<br />
+## Installation
+No need for install currently, but you need to include all the CPP and H files.
