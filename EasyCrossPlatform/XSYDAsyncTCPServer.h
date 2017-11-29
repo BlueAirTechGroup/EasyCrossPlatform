@@ -7,7 +7,7 @@
 
 	namespace EasyCrossPlatform {
 		namespace Network {
-			#define TCPAsyncServerTmpSize 50
+			#define TCPAsyncServerTmpSize 1024
 			class TCPAsyncSocket {
 			private:
 				unsigned short m_PortNum = 0;

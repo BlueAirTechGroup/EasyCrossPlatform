@@ -1,0 +1,20 @@
+﻿  CrossPlatform_Socket.cpp
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.h(68): warning C4309: “默认参数”: 截断常量值
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.h(69): warning C4309: “默认参数”: 截断常量值
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.cpp(38): warning C4305: “初始化”: 从“int”到“unsigned short”截断
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.cpp(38): warning C4309: “初始化”: 截断常量值
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.cpp(336): warning C4305: “参数”: 从“int”到“unsigned short”截断
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.cpp(336): warning C4309: “参数”: 截断常量值
+  正在生成代码...
+  正在编译...
+  XSYDAsyncTCPServer.cpp
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.h(68): warning C4309: “默认参数”: 截断常量值
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.h(69): warning C4309: “默认参数”: 截断常量值
+  正在生成代码...
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\xsydasynctcpserver.cpp(198): warning C4715: “EasyCrossPlatform::Network::TCPAsyncSocket::Listen”: 不是所有的控件路径都返回值
+  正在编译...
+  main.cpp
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.h(68): warning C4309: “默认参数”: 截断常量值
+e:\c++\easycrossplatform\easycrossplatform\easycrossplatform\crossplatform_socket.h(69): warning C4309: “默认参数”: 截断常量值
+  正在生成代码...
+  EasyCrossPlatform.vcxproj -> E:\C++\EasyCrossPlatform\EasyCrossPlatform\Debug\EasyCrossPlatform_Test.exe

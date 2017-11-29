@@ -1,4 +1,5 @@
 # EasyCrossPlatform
+No Longer Maintained, New Repository Under <a href="https://github.com/EasyCrossPlatformLib">Separate Organization Page</a>
 ## Introduction
 A easy-to-use cross-platform C++ library designed for PHP and Python Users.<br />
 Powered by Windy, a member of <a href="http://www.xsyds.cn/" target="_blank">BlueAirTechGroup</a><br />

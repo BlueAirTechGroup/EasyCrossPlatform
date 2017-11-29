@@ -325,8 +325,9 @@ Socket* Socket::Accept()
 	RemoteSocket = accept(this->m_SocketDescriptor, (struct sockaddr*)&Remote, &StructSize);
 	if (RemoteSocket == -1)
 	{
-		if (this->GetError() != 0) {
-			ProvideErrorString();
+		ProvideErrorString();
+		int ErrorNum = this->GetError();
+		if (ErrorNum != 0 && ErrorNum != EAGAIN && ErrorNum != EWOULDBLOCK) {
 			throw SocketException(m_ErrorString);
 		}
 		return NULL;
@@ -380,11 +381,11 @@ int Socket::Read(const void* Buffer, int Size, bool Block)
 		//throw SocketException("Server shutting down.");
 		return 0;
 	}
+	ProvideErrorString();
 	int ErrCode = 0;
 	ErrCode = this->GetError();
 	if (ReturnValue == -1 && ErrCode != 0 && ErrCode != EAGAIN && ErrCode != EWOULDBLOCK)
 	{
-		ProvideErrorString();
 		throw SocketException(m_ErrorString);
 	}
 
@@ -454,11 +455,11 @@ int Socket::ReadFrom(void* Buffer, int Size, bool Block)
 		ioctlsocket(this->m_SocketDescriptor, FIONBIO, &mode);
 	}
 #endif
+	ProvideErrorString();
 	int ErrCode = 0;
 	ErrCode = this->GetError();
 	if (ReturnValue == -1 && ErrCode != 0 && ErrCode != EAGAIN && ErrCode != EWOULDBLOCK)
 	{
-		ProvideErrorString();
 		throw SocketException(m_ErrorString);
 	}
 

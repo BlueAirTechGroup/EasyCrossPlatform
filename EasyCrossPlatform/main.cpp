@@ -139,7 +139,7 @@ public:
 	}
 };
 //AsyncServer Test
-int main_AsyncServer(int argc, char** args){
+int main(int argc, char** args){
 	MyServer mServer;
 	mServer.Listen(900);
 	char Input[100];
@@ -151,7 +151,7 @@ int main_AsyncServer(int argc, char** args){
 }
 
 //ChronoTest
-int main(int argc, char** args) {
+int main_Chrono(int argc, char** args) {
 	//double nowTime = EasyCrossPlatform::Chrono::systemTime();
 	double nowTime = EasyCrossPlatform::Chrono::accurateTime();
 	std::cout << "Time:" << nowTime << std::endl;
@@ -161,4 +161,5 @@ int main(int argc, char** args) {
 	std::cout << "Duration: " << (newTime - nowTime) << " s" << std::endl;
 	std::cout << "Take: " << (2 * sizeof(double)) << "Byte Space" << std::endl;
 	system("pause");
+	return 0;
 }
